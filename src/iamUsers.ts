@@ -4,6 +4,9 @@ import { request } from "./utils/request";
 import iamUsers from "./constant/bpUsersInfo";
 import * as _ from "lodash";
 import { exit } from "process";
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 (async () => {
   await AppDataSource.initialize()
@@ -54,17 +57,6 @@ import { exit } from "process";
           },
           resHeader,
         } = response;
-        // console.log({
-        //   userId: id,
-        //   userName: ima_user_name,
-        //   sort: sort,
-        //   status: canUse,
-        //   expiresAt: "",
-        //   issuedAt: "",
-        //   bpId: domain.id,
-        //   token: resHeader["x-subject-token"],
-        // });
-
         const iamUser = await AppDataSource.createQueryBuilder()
           .insert()
           .into(IamUser)
@@ -73,8 +65,14 @@ import { exit } from "process";
             userName: ima_user_name,
             sort: sort,
             status: canUse,
-            expiresAt: "",
-            issuedAt: "",
+            expiresAt: dayjs
+              .utc(expires_at)
+              .local()
+              .format("YYYY-MM-DD HH:mm:ss"),
+            issuedAt: dayjs
+              .utc(issued_at)
+              .local()
+              .format("YYYY-MM-DD HH:mm:ss"),
             bpId: domain.id,
             token: resHeader["x-subject-token"],
           })
@@ -93,7 +91,6 @@ import { exit } from "process";
           .execute();
       })
       .catch(function (error) {
-        console.log("==========");
         // 处理错误情况
         console.log(error);
       })
