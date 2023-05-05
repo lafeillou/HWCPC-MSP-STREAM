@@ -6,11 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Unique,
-  VersionColumn,
 } from "typeorm";
 
 @Entity()
-@Unique(["record_time", "customer_id"])
+@Unique(["record_time", "customer_id", "version"])
 export class Customer {
   @PrimaryGeneratedColumn("uuid")
   id: number;
@@ -24,7 +23,9 @@ export class Customer {
   updateTime: Date;
 
   @Index()
-  @VersionColumn()
+  @Column({
+    type: "int",
+  })
   version: number;
 
   @Index()

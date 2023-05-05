@@ -117,7 +117,7 @@ async function getSubCustomers(data, token) {
           "smbRecord",
           "isSMB",
         ],
-        ["record_time", "customer_id"]
+        ["record_time", "customer_id", "version"]
       )
       .execute();
     // console.log(records.length);
