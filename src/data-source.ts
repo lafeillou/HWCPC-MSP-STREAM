@@ -1,7 +1,9 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { User } from "./entity/User";
+
 import { IamUser } from "./entity/Iam_user";
+import { Customer } from "./entity/Customer";
+import { Partner } from "./entity/Partner";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -12,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: "hwautodata",
   synchronize: true,
   logging: false,
-  entities: [IamUser],
+  entities: [IamUser, Customer, Partner],
   migrations: [],
   subscribers: [],
 });
