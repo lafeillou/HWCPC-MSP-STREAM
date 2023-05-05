@@ -9,8 +9,8 @@ import {
 } from "typeorm";
 
 @Entity()
-@Unique(["updateTime", "customer_id", "version"])
-export class Customer {
+@Unique(["updateTime", "customer_id"])
+export class CustomerTemp {
   @PrimaryGeneratedColumn("uuid")
   id: number;
 
@@ -21,12 +21,6 @@ export class Customer {
   @Index()
   @UpdateDateColumn({ comment: "更新时间" })
   updateTime: Date;
-
-  @Index()
-  @Column({
-    type: "int",
-  })
-  version: number;
 
   @Index()
   @Column({

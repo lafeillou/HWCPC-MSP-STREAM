@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { IamUser } from "./entity/Iam_user";
 import { Customer } from "./entity/Customer";
 import { Partner } from "./entity/Partner";
+import { CustomerTemp } from "./entity/Customer_temp";
 
 // 本地数据库
 export const AppDataSource = new DataSource({
@@ -15,7 +16,7 @@ export const AppDataSource = new DataSource({
   database: "hwautodata",
   synchronize: true,
   logging: false,
-  entities: [IamUser, Customer, Partner],
+  entities: [IamUser, Customer, Partner, CustomerTemp],
   migrations: [],
   subscribers: [],
 });

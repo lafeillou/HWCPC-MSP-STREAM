@@ -1,6 +1,6 @@
 import { AppDataSource } from "./data-source";
 import { IamUser } from "./entity/Iam_user";
-import { Customer } from "./entity/Customer";
+import { CustomerTemp } from "./entity/Customer_temp";
 import { Partner } from "./entity/Partner";
 import { request } from "./utils/request";
 import * as _ from "lodash";
@@ -95,16 +95,17 @@ async function getSubCustomers(data, token) {
             .utc(v.associated_on)
             .local()
             .format("YYYY-MM-DD HH:mm:ss");
-          v.record_time = dayjs.utc().local().format("YYYY-MM-DD");
+
           v.parent_id = u.bpId;
           v.bpId = u.bpId; // BP账号的ID
+          v.updateTime = v.createTime = dayjs().format("YYYY-MM-DD");
         });
         records = records.concat(customer_infos);
       }
 
       await AppDataSource.createQueryBuilder()
         .insert()
-        .into(Customer)
+        .into(CustomerTemp)
         .values(records)
         .orUpdate(
           [
@@ -132,7 +133,7 @@ async function getSubCustomers(data, token) {
             "smbRecord",
             "isSMB",
           ],
-          ["record_time", "customer_id"]
+          ["updateTime", "customer_id"]
         )
         .execute();
       // console.log(records.length);

@@ -70,14 +70,15 @@ import { exit } from "process";
         smbStatus: v.smbStatus,
         smbRecord: v.smbRecord,
         isSMB: v.isSMB,
-        record_time: dayjs.utc().local().format("YYYY-MM-DD"), // todo
+        updateTime: dayjs(v.updatedAt).format("YYYY-MM-DD"),
+        createTime: dayjs(v.createdAt).format("YYYY-MM-DD"),
         version: version,
       };
 
       await queryRunner2.manager.upsert(
         Customer,
         [c],
-        ["record_time", "customer_id", "version"]
+        ["updateTime", "customer_id", "version"]
       );
     }
   }
