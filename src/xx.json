@@ -1,0 +1,26 @@
+{
+    "resHeader": {
+        "date": "Sat, 06 May 2023 07:09:49 GMT",
+        "pragma": "no-cache",
+        "server": "api-gateway",
+        "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+        "connection": "close",
+        "content-type": "application/json; charset=utf-8",
+        "x-request-id": "aec8bdce1cd085aa5a841d3c28f6e520",
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "content-length": "66",
+        "x-frame-options": "SAMEORIGIN",
+        "lubanops-nenv-id": "161809",
+        "x-xss-protection": "1; mode=block;",
+        "lubanops-gtrace-id": "v-706133-1683356988965-53178644",
+        "x-download-options": "noopen",
+        "x-kong-proxy-latency": "13",
+        "x-content-type-options": "nosniff",
+        "olc-invocation-pressure": "{\"customerLevel\":\"V0\",\"availableLevel\":\"all\",\"serviceNode\":\"csbpartneropenapi-8b79f8f6-5d5ml\"}",
+        "x-kong-upstream-latency": "54",
+        "strict-transport-security": "max-age=31536000; includeSubdomains;"
+    },
+    "expire_time": null,
+    "effective_time": null,
+    "new_customer_tag": null
+}

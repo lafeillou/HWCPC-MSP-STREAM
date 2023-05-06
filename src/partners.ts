@@ -82,7 +82,7 @@ async function getSubCustomers(data, token) {
           .utc(v.associated_on)
           .local()
           .format("YYYY-MM-DD HH:mm:ss");
-        v.record_time = dayjs.utc().local().format("YYYY-MM-DD");
+        v.updateTime = dayjs().format("YYYY-MM-DD");
         v.bpId = u.bpId; // BP账号的ID
       });
       records = records.concat(indirect_partners);
@@ -103,8 +103,9 @@ async function getSubCustomers(data, token) {
           "associated_on",
           "account_manager_id",
           "account_manager_name",
+          "updateTime",
         ],
-        ["record_time", "indirect_partner_id"]
+        ["updateTime", "indirect_partner_id"]
       )
       .execute();
     // console.log(records.length);

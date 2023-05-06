@@ -128,7 +128,7 @@ export class Customer {
     comment: "该客户对应的客户经理信息，目前只支持1个",
     nullable: true,
   })
-  account_managers: string;
+  account_managers: object;
 
   @Column({
     type: "varchar",
@@ -182,7 +182,7 @@ export class Customer {
     comment: "是否NA 获取接口原始信息",
     nullable: true,
   })
-  naRecords: string;
+  naRecords: object;
 
   @Column({
     type: "varchar",
@@ -191,14 +191,14 @@ export class Customer {
     comment: "Y,N,U(UNDETERMINED),Y_UNDETERMINED 接口原始记录",
     nullable: true,
   })
-  smbStatus: string;
+  newCustomerStatus: string;
 
   @Column({
     type: "json",
     comment: "是否SMB 获取接口原始信息",
     nullable: true,
   })
-  smbRecord: string;
+  newCustomerRecord: object;
 
   @Column({
     type: "tinyint",
@@ -206,7 +206,7 @@ export class Customer {
     default: 0,
     nullable: true,
   })
-  isSMB: number;
+  isNewCustomer: number;
 
   @Column({
     type: "varchar",

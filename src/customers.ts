@@ -112,9 +112,10 @@ async function getSubCustomers(data, token) {
           "unbind_on",
           "isNA",
           "naRecords",
-          "smbStatus",
-          "smbRecord",
-          "isSMB",
+          "newCustomerStatus",
+          "newCustomerRecord",
+          "isNewCustomer",
+          "updateTime",
         ],
         ["updateTime", "customer_id"]
       )

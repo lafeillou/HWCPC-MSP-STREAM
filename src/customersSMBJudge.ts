@@ -13,7 +13,7 @@ dayjs.extend(utc);
 async function getNaInfo(params, token) {
   const result: any = await request({
     method: "get",
-    url: "https://bss.myhuaweicloud.com/v2/auxiliary-operations/na-tags",
+    url: "https://bss.myhuaweicloud.com/v2/settlements/new-customers-tags/smb",
     headers: {
       "X-Auth-Token": token,
     },
@@ -27,19 +27,34 @@ async function getNaInfo(params, token) {
       .into(CustomerTemp)
       .values({
         customer_id: params.customer_id,
-        isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
-        naRecords: result.na_records,
+        isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
+        newCustomerStatus: result.new_customer_tag,
+        newCustomerRecord: {
+          expire_time: result.expire_time,
+          effective_time: result.effective_time,
+          new_customer_tag: result.new_customer_tag,
+        },
         updateTime: dayjs().format("YYYY-MM-DD"),
       })
       .orUpdate(
-        ["isNA", "naRecords", "updateTime"],
+        [
+          "newCustomerStatus",
+          "newCustomerRecord",
+          "isNewCustomer",
+          "updateTime",
+        ],
         ["updateTime", "customer_id"]
       )
       .execute();
     return {
       customer_id: params.customer_id,
-      na_records: result.na_records,
-      total_count: result.total_count,
+      newCustomerStatus: result.new_customer_tag,
+      newCustomerRecord: {
+        expire_time: result.expire_time,
+        effective_time: result.effective_time,
+        new_customer_tag: result.new_customer_tag,
+      },
+      isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
     };
   }
 

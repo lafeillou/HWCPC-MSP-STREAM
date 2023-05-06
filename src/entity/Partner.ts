@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 
 @Entity()
-@Unique(["record_time", "indirect_partner_id"])
+@Unique(["updateTime", "indirect_partner_id"])
 export class Partner {
   @PrimaryGeneratedColumn("uuid")
   id: number;
@@ -99,11 +99,4 @@ export class Partner {
     nullable: true,
   })
   account_manager_name: string;
-
-  @Column({
-    type: "date",
-    comment: "查询时间",
-    nullable: true,
-  })
-  record_time: Date;
 }

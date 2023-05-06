@@ -31,7 +31,9 @@ async function getSubCustomers(data, token) {
   return result;
 }
 (async () => {
-  await AppDataSource.initialize(); // 每一次都得执行
+  await AppDataSource.initialize().catch((err) => {
+    console.log(err);
+  }); // 每一次都得执行
 
   const iamUsers = await await AppDataSource.getRepository(IamUser)
     .createQueryBuilder("iamUsers")
@@ -66,7 +68,9 @@ async function getSubCustomers(data, token) {
           indirect_partner_id: p.indirect_partner_id,
         },
         u.token
-      );
+      ).catch((err) => {
+        console.log(err);
+      });
 
       // count 可能为undefined 或者 0
       if (!count) {
@@ -129,9 +133,10 @@ async function getSubCustomers(data, token) {
             "unbind_on",
             "isNA",
             "naRecords",
-            "smbStatus",
-            "smbRecord",
-            "isSMB",
+            "newCustomerStatus",
+            "newCustomerRecord",
+            "isNewCustomer",
+            "updateTime",
           ],
           ["updateTime", "customer_id"]
         )
