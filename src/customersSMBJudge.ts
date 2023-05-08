@@ -149,7 +149,7 @@ function createRequest(tasks, pool) {
   }
 
   // tasksArr 中有超过1万个ajax请求任务
-  const results = await createRequest(tasksArr, 4);
+  const results = await createRequest(tasksArr, 1);
   const endTime = +new Date();
   console.log("消耗时间:");
   console.log(endTime - startTime);

@@ -10,7 +10,7 @@ dayjs.extend(utc);
 import { exit } from "process";
 
 (async () => {
-  console.time("导入生产库中直客数据");
+  console.time("导入生产库中精服的客户数据");
   await OldAppDataSource.initialize();
   await AppDataSource.initialize();
   // .then(async () => {
@@ -28,14 +28,14 @@ import { exit } from "process";
 
   // 查询所有不同的客户ID
   const allDifCustomers = await queryRunner.query(
-    "SELECT * FROM customers c group by c.customer_id"
+    "SELECT * FROM indirectcustomers c group by c.customer_id"
   );
 
   for (let i = 0; i < allDifCustomers.length; i++) {
     const c = allDifCustomers[i];
     // 按照版本号排序
     let result = await queryRunner.query(
-      `select * from customers c where c.customer_id = "${c.customer_id}" order by c.version desc` // *要细化
+      `select * from indirectcustomers c where c.customer_id = "${c.customer_id}" order by c.version desc` // *要细化
     );
 
     result = _.uniqWith(result, (arrVal, othVal) => {
@@ -52,7 +52,7 @@ import { exit } from "process";
 
       const c = {
         bpId: v.bpId,
-        parent_id: v.bpId,
+        parent_id: v.elite_customer_id,
         customer: v.customer,
         customer_id: v.customer_id,
         account_name: v.account_name,
@@ -94,6 +94,6 @@ import { exit } from "process";
   await queryRunner.release();
   await queryRunner2.release();
 
-  console.timeEnd("导入生产库中直客数据");
+  console.timeEnd("导入生产库中精服的客户数据");
   exit(1);
 })();

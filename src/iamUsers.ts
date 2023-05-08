@@ -58,20 +58,6 @@ dayjs.extend(utc);
           resHeader,
         } = response;
 
-        console.log({
-          userId: id,
-          userName: ima_user_name,
-          sort: sort,
-          status: canUse,
-          expiresAt: dayjs
-            .utc(expires_at)
-            .local()
-            .format("YYYY-MM-DD HH:mm:ss"),
-          issuedAt: dayjs.utc(issued_at).local().format("YYYY-MM-DD HH:mm:ss"),
-          bpId: domain.id,
-          token: resHeader["x-subject-token"],
-        });
-
         const iamUser = await AppDataSource.createQueryBuilder()
           .insert()
           .into(IamUser)
@@ -112,6 +98,9 @@ dayjs.extend(utc);
       .then(function () {
         // 总是会执行
         // 记录审计信息
+        if (k === iamUsers.length - 1) {
+          exit(1); // 最后一个bp处理完
+        }
       });
   });
 })();
