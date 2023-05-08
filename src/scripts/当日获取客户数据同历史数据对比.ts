@@ -19,7 +19,7 @@ import { exit } from "process";
     "select * from (select row_number() over (partition by c.customer_id order by c.version desc ) as rn, c.* from customer as c) as b where b.rn = 1"
   );
 
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < historyCustomers.length; i++) {
     const customer = historyCustomers[i];
 
     const customerPlain = _.omit(customer, [
@@ -59,6 +59,35 @@ import { exit } from "process";
             createTime: dayjs().format("YYYY-MM-DD"),
             updateTime: dayjs().format("YYYY-MM-DD"),
           })
+          .orUpdate(
+            [
+              "bpId",
+              "parent_id",
+              "customer",
+              "account_name",
+              "associated_on",
+              "association_type",
+              "label",
+              "telephone",
+              "verified_status",
+              "country_code",
+              "customer_type",
+              "is_frozen",
+              "account_managers",
+              "xaccount_id",
+              "xaccount_type",
+              "customer_level",
+              "bind_status",
+              "unbind_on",
+              "isNA",
+              "naRecords",
+              "newCustomerStatus",
+              "newCustomerRecord",
+              "isNewCustomer",
+              "updateTime",
+            ],
+            ["updateTime", "customer_id", "version"]
+          )
           .execute();
       } else {
         // do nothing
