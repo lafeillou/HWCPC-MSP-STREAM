@@ -100,7 +100,7 @@ async function getSubCustomers(data, token) {
             .local()
             .format("YYYY-MM-DD HH:mm:ss");
 
-          v.parent_id = u.bpId;
+          v.parent_id = p.indirect_partner_id;
           v.bpId = u.bpId; // BP账号的ID
           v.updateTime = v.createTime = dayjs().format("YYYY-MM-DD");
         });

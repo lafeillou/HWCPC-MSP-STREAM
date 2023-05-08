@@ -11,40 +11,49 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 async function getNaInfo(params, token) {
-  const result: any = await request({
-    method: "get",
-    url: "https://bss.myhuaweicloud.com/v2/auxiliary-operations/na-tags",
-    headers: {
-      "X-Auth-Token": token,
-    },
-    params,
-  });
+  return new Promise(async (resolve, reject) => {
+    const result: any = await request({
+      method: "get",
+      url: "https://bss.myhuaweicloud.com/v2/auxiliary-operations/na-tags",
+      headers: {
+        "X-Auth-Token": token,
+      },
+      params,
+    })
+      .then((res) => res)
+      .catch((err) => {
+        // reject(err);
+        console.log(err);
+        resolve({
+          customer_id: params.customer_id,
+          na_records: null,
+          total_count: null,
+        });
+      });
 
-  if (result) {
-    // 异步写入数据库
-    await AppDataSource.createQueryBuilder()
-      .insert()
-      .into(CustomerTemp)
-      .values({
+    if (result) {
+      // 异步写入数据库
+      await AppDataSource.createQueryBuilder()
+        .insert()
+        .into(CustomerTemp)
+        .values({
+          customer_id: params.customer_id,
+          isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
+          naRecords: result.na_records,
+          updateTime: dayjs().format("YYYY-MM-DD"),
+        })
+        .orUpdate(
+          ["isNA", "naRecords", "updateTime"],
+          ["updateTime", "customer_id"]
+        )
+        .execute();
+      resolve({
         customer_id: params.customer_id,
-        isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
-        naRecords: result.na_records,
-        updateTime: dayjs().format("YYYY-MM-DD"),
-      })
-      .orUpdate(
-        ["isNA", "naRecords", "updateTime"],
-        ["updateTime", "customer_id"]
-      )
-      .execute();
-    return {
-      customer_id: params.customer_id,
-      na_records: result.na_records,
-      total_count: result.total_count,
-    };
-  }
-
-  // 报错的情况，也要考虑
-  return result;
+        na_records: result.na_records,
+        total_count: result.total_count,
+      });
+    }
+  });
 }
 
 function createRequest(tasks, pool) {
@@ -77,7 +86,9 @@ function createRequest(tasks, pool) {
             run();
           })
           .catch((err) => {
+            // 都会成功，不会到这里
             reject(err);
+            console.log(err);
           });
       };
       run();
@@ -126,7 +137,8 @@ function createRequest(tasks, pool) {
   // tasksArr 中有超过1万个ajax请求任务
   const results = await createRequest(tasksArr, 4);
   const endTime = +new Date();
+  console.log("消耗时间:");
   console.log(endTime - startTime);
-  console.log(results);
+  // console.log(results);
   exit(1);
 })();

@@ -11,55 +11,65 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 async function getNaInfo(params, token) {
-  const result: any = await request({
-    method: "get",
-    url: "https://bss.myhuaweicloud.com/v2/settlements/new-customers-tags/smb",
-    headers: {
-      "X-Auth-Token": token,
-    },
-    params,
-  });
+  return new Promise(async (resolve, reject) => {
+    const result: any = await request({
+      method: "get",
+      url: "https://bss.myhuaweicloud.com/v2/settlements/new-customers-tags/smb",
+      headers: {
+        "X-Auth-Token": token,
+      },
+      params,
+    })
+      .then((res) => res)
+      .catch((err) => {
+        // reject(err);
+        console.log(err);
+        resolve({
+          customer_id: params.customer_id,
+          newCustomerStatus: null,
+          newCustomerRecord: null,
+          isNewCustomer: null,
+        });
+      });
 
-  if (result) {
-    // 异步写入数据库
-    await AppDataSource.createQueryBuilder()
-      .insert()
-      .into(CustomerTemp)
-      .values({
+    if (result) {
+      // 异步写入数据库
+      await AppDataSource.createQueryBuilder()
+        .insert()
+        .into(CustomerTemp)
+        .values({
+          customer_id: params.customer_id,
+          isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
+          newCustomerStatus: result.new_customer_tag,
+          newCustomerRecord: {
+            expire_time: result.expire_time,
+            effective_time: result.effective_time,
+            new_customer_tag: result.new_customer_tag,
+          },
+          updateTime: dayjs().format("YYYY-MM-DD"),
+        })
+        .orUpdate(
+          [
+            "newCustomerStatus",
+            "newCustomerRecord",
+            "isNewCustomer",
+            "updateTime",
+          ],
+          ["updateTime", "customer_id"]
+        )
+        .execute();
+      resolve({
         customer_id: params.customer_id,
-        isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
         newCustomerStatus: result.new_customer_tag,
         newCustomerRecord: {
           expire_time: result.expire_time,
           effective_time: result.effective_time,
           new_customer_tag: result.new_customer_tag,
         },
-        updateTime: dayjs().format("YYYY-MM-DD"),
-      })
-      .orUpdate(
-        [
-          "newCustomerStatus",
-          "newCustomerRecord",
-          "isNewCustomer",
-          "updateTime",
-        ],
-        ["updateTime", "customer_id"]
-      )
-      .execute();
-    return {
-      customer_id: params.customer_id,
-      newCustomerStatus: result.new_customer_tag,
-      newCustomerRecord: {
-        expire_time: result.expire_time,
-        effective_time: result.effective_time,
-        new_customer_tag: result.new_customer_tag,
-      },
-      isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
-    };
-  }
-
-  // 报错的情况，也要考虑
-  return result;
+        isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
+      });
+    }
+  });
 }
 
 function createRequest(tasks, pool) {
@@ -141,7 +151,8 @@ function createRequest(tasks, pool) {
   // tasksArr 中有超过1万个ajax请求任务
   const results = await createRequest(tasksArr, 4);
   const endTime = +new Date();
+  console.log("消耗时间:");
   console.log(endTime - startTime);
-  console.log(results);
+  // console.log(results);
   exit(1);
 })();
