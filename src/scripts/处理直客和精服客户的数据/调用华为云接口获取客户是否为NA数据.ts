@@ -41,6 +41,7 @@ async function getNaInfo(params, token) {
           isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
           naRecords: result.na_records,
           updateTime: dayjs().format("YYYY-MM-DD"),
+          customerType: params.customerType,
         })
         .orUpdate(
           ["isNA", "naRecords", "updateTime"],
@@ -129,6 +130,7 @@ function createRequest(tasks, pool) {
       getNaInfo(
         {
           customer_id: c.customer_id,
+          customerType: c.customerType,
         },
         bpTokenMap[c.bpId]
       )

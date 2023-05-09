@@ -9,6 +9,7 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 (async () => {
+  console.time("登录所有可用的看板华为云IAM账号");
   await AppDataSource.initialize()
     .then(() => {
       console.log("Data Source has been initialized!");
@@ -99,6 +100,7 @@ dayjs.extend(utc);
         // 总是会执行
         // 记录审计信息
         if (k === iamUsers.length - 1) {
+          console.timeEnd("登录所有可用的看板华为云IAM账号");
           exit(1); // 最后一个bp处理完
         }
       });
