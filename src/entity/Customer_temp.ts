@@ -210,4 +210,12 @@ export class CustomerTemp {
     nullable: true,
   })
   parent_id: string;
+
+  // 由于直客和精英服务商的客户放在一起，增加一个字段表示类别
+  // 由于直客和精英服务商的客户放在一起，增加一个字段表示类别
+  @Column({
+    type: "tinyint",
+    comment: "0 直客 1 精英服务商客户",
+  })
+  customerType: number;
 }

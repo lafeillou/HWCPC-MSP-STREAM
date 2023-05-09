@@ -82,6 +82,7 @@ async function getSubCustomers(data, token) {
         v.parent_id = u.bpId;
         v.bpId = u.bpId; // BP账号的ID
         v.updateTime = v.createTime = dayjs().format("YYYY-MM-DD");
+        v.customerType = 0; // 直客类型
       });
       records = records.concat(customer_infos);
     }

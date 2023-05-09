@@ -54,6 +54,7 @@ import { exit } from "process";
           .values({
             ...matchedCustomerPlain,
             version: customer.version + 1,
+            isNewest: 1, // 指定为最新的版本
             bind_status: 1,
             unbind_on: null,
             createTime: dayjs().format("YYYY-MM-DD"),
@@ -85,6 +86,7 @@ import { exit } from "process";
               "newCustomerRecord",
               "isNewCustomer",
               "updateTime",
+              "customerType",
             ],
             ["updateTime", "customer_id", "version"]
           )
@@ -106,7 +108,7 @@ import { exit } from "process";
           "YYYY-MM-DD"
         );
         historyCustomer.bind_status = 0;
-
+        historyCustomer.isNewest = 1; // 指定为最新的版本
         await AppDataSource.createQueryBuilder()
           .update(Customer)
           .set(historyCustomer)

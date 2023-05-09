@@ -81,6 +81,7 @@ import { exit } from "process";
         updateTime: dayjs(v.updatedAt).format("YYYY-MM-DD"),
         createTime: dayjs(v.createdAt).format("YYYY-MM-DD"),
         version: version,
+        customerType: 0, // 标记为直客类型
       };
 
       await queryRunner2.manager.upsert(

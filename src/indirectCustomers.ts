@@ -103,6 +103,7 @@ async function getSubCustomers(data, token) {
           v.parent_id = p.indirect_partner_id;
           v.bpId = u.bpId; // BP账号的ID
           v.updateTime = v.createTime = dayjs().format("YYYY-MM-DD");
+          v.customerType = 1; // 精英服务商的客户类型
         });
         records = records.concat(customer_infos);
       }
