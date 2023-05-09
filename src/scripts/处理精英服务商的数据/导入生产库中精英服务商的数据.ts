@@ -1,16 +1,18 @@
-import { OldAppDataSource, AppDataSource } from "../data-source";
-import { IamUser } from "../entity/Iam_user";
-import { request } from "../utils/request";
-import iamUsers from "../constant/bpUsersInfo";
+import { OldAppDataSource, AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { request } from "../../utils/request";
+import iamUsers from "../../constant/bpUsersInfo";
 import * as _ from "lodash";
-import { Customer } from "../entity/Customer";
+import { Customer } from "../../entity/Customer";
+import { Partner } from "../../entity/Partner";
+
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 import { exit } from "process";
 
 (async () => {
-  console.time("导入生产库中精服的客户数据");
+  console.time("导入生产库中精英服务商的数据");
   await OldAppDataSource.initialize();
   await AppDataSource.initialize();
   // .then(async () => {
@@ -28,14 +30,14 @@ import { exit } from "process";
 
   // 查询所有不同的客户ID
   const allDifCustomers = await queryRunner.query(
-    "SELECT * FROM indirectcustomers c group by c.customer_id"
+    "SELECT * FROM elitecustomers c group by c.indirect_partner_id"
   );
 
   for (let i = 0; i < allDifCustomers.length; i++) {
     const c = allDifCustomers[i];
     // 按照版本号排序
     let result = await queryRunner.query(
-      `select * from indirectcustomers c where c.customer_id = "${c.customer_id}" order by c.version desc` // *要细化
+      `select * from elitecustomers c where c.indirect_partner_id = "${c.indirect_partner_id}" order by c.version desc` // *要细化
     );
 
     result = _.uniqWith(result, (arrVal, othVal) => {
@@ -52,42 +54,31 @@ import { exit } from "process";
 
       const c = {
         bpId: v.bpId,
-        parent_id: v.elite_customer_id,
-        customer: v.customer,
-        customer_id: v.customer_id,
+        parent_id: v.bpId,
+        indirect_partner_id: v.indirect_partner_id,
+        mobile_phone: v.mobile_phone,
+        email: v.email,
         account_name: v.account_name,
+        name: v.name,
         associated_on: dayjs
           .utc(v.associated_on)
           .local()
           .format("YYYY-MM-DD HH:mm:ss"), // to do
-        association_type: v.association_type,
-        label: v.label,
-        telephone: v.telephone,
-        verified_status: v.verified_status,
-        country_code: v.country_code,
-        customer_type: v.customer_type,
-        is_frozen: v.is_frozen,
-        account_managers: v.account_managers,
-        xaccount_id: v.xaccount_id,
-        xaccount_type: v.xaccount_type,
-        customer_level: v.customer_level,
+        account_manager_id: v.account_manager_id,
+        account_manager_name: v.account_manager_name,
         bind_status: v.bind_status,
         unbind_on: v.unbind_on,
-        isNA: v.isNA,
-        naRecords: v.naRecords,
-        newCustomerStatus: v.smbStatus,
-        newCustomerRecord: v.smbRecord,
-        isNewCustomer: v.isSMB,
+
         updateTime: dayjs(v.updatedAt).format("YYYY-MM-DD"),
         createTime: dayjs(v.createdAt).format("YYYY-MM-DD"),
         version: version,
-        customerType: 1, // 标记为精服的客户类型
+        customerType: 2, // 标记为精服的客户类型
       };
 
       await queryRunner2.manager.upsert(
-        Customer,
+        Partner,
         [c],
-        ["updateTime", "customer_id", "version"]
+        ["updateTime", "indirect_partner_id", "version"]
       );
     }
   }
@@ -95,6 +86,6 @@ import { exit } from "process";
   await queryRunner.release();
   await queryRunner2.release();
 
-  console.timeEnd("导入生产库中精服的客户数据");
+  console.timeEnd("导入生产库中精英服务商的数据");
   exit(1);
 })();

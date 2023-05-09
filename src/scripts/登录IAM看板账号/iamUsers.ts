@@ -1,7 +1,7 @@
-import { AppDataSource } from "./data-source";
-import { IamUser } from "./entity/Iam_user";
-import { request } from "./utils/request";
-import iamUsers from "./constant/bpUsersInfo";
+import { AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { request } from "../../utils/request";
+import iamUsers from "../../constant/bpUsersInfo";
 import * as _ from "lodash";
 import { exit } from "process";
 const dayjs = require("dayjs");

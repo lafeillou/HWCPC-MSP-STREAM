@@ -1,8 +1,8 @@
-import { AppDataSource } from "./data-source";
-import { IamUser } from "./entity/Iam_user";
-import { CustomerTemp } from "./entity/Customer_temp";
-import { Partner } from "./entity/Partner";
-import { request } from "./utils/request";
+import { AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { CustomerTemp } from "../../entity/Customer_temp";
+import { Partner } from "../../entity/Partner";
+import { request } from "../../utils/request";
 import * as _ from "lodash";
 import { exit } from "process";
 
@@ -31,6 +31,7 @@ async function getSubCustomers(data, token) {
   return result;
 }
 (async () => {
+  console.time("调用华为云接口获取当日精英服务商的客户的数据");
   await AppDataSource.initialize().catch((err) => {
     console.log(err);
   }); // 每一次都得执行
@@ -145,6 +146,6 @@ async function getSubCustomers(data, token) {
       // console.log(records.length);
     }
   }
-
+  console.timeEnd("调用华为云接口获取当日精英服务商的客户的数据");
   exit(1);
 })();

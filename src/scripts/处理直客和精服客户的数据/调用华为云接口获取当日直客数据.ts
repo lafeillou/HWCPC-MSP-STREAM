@@ -1,7 +1,7 @@
-import { AppDataSource } from "./data-source";
-import { IamUser } from "./entity/Iam_user";
-import { Partner } from "./entity/Partner";
-import { request } from "./utils/request";
+import { AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { CustomerTemp } from "../../entity/Customer_temp";
+import { request } from "../../utils/request";
 import * as _ from "lodash";
 import { exit } from "process";
 
@@ -12,32 +12,35 @@ dayjs.extend(utc);
 async function getSubCustomers(data, token) {
   const result: any = await request({
     method: "post",
-    url: "https://bss.myhuaweicloud.com/v2/partners/indirect-partners/query",
+    url: "https://bss.myhuaweicloud.com/v2/partners/sub-customers/query",
     headers: {
       "X-Auth-Token": token,
     },
     data,
+  }).catch((err) => {
+    console.log(err);
   });
 
   if (result) {
     return {
-      indirect_partners: result.indirect_partners,
+      customer_infos: result.customer_infos,
       count: result.count,
     };
   }
 
   // 报错的情况，也要考虑
-  return result;
+  return {
+    customer_infos: [],
+    count: 0,
+  };
 }
 (async () => {
+  console.time("调用华为云接口获取当日直客数据");
   await AppDataSource.initialize(); // 每一次都得执行
 
   const iamUsers = await AppDataSource.getRepository(IamUser)
     .createQueryBuilder("iamUsers")
     .where("iamUsers.status = :status", { status: 1 }) // 在用的账号
-    // .andWhere("iamUsers.bpId = :bpId", {
-    //   bpId: "a89f44cd78a348b29c69bc71dd4d6f5e",
-    // })
     .orderBy("iamUsers.sort", "ASC") // 按照排序来，一般重点区域排在前面
     .getMany();
 
@@ -66,7 +69,7 @@ async function getSubCustomers(data, token) {
     let pageCount = Math.ceil(count / limit);
     let records = [];
     for (let i = 0; i < pageCount; i++) {
-      const { indirect_partners } = await getSubCustomers(
+      const { customer_infos } = await getSubCustomers(
         {
           offset: i * limit,
           limit,
@@ -74,41 +77,58 @@ async function getSubCustomers(data, token) {
         u.token
       );
 
-      if (!indirect_partners) {
+      if (!customer_infos) {
         continue;
       }
-      _.forEach(indirect_partners, (v: any) => {
+      _.forEach(customer_infos, (v: any) => {
         v.associated_on = dayjs
           .utc(v.associated_on)
           .local()
           .format("YYYY-MM-DD HH:mm:ss");
-        v.updateTime = dayjs().format("YYYY-MM-DD");
+        v.parent_id = u.bpId;
         v.bpId = u.bpId; // BP账号的ID
+        v.updateTime = v.createTime = dayjs().format("YYYY-MM-DD");
+        v.customerType = 0; // 直客类型
       });
-      records = records.concat(indirect_partners);
+      records = records.concat(customer_infos);
     }
 
     await AppDataSource.createQueryBuilder()
       .insert()
-      .into(Partner)
+      .into(CustomerTemp)
       .values(records)
       .orUpdate(
         [
           "bpId",
-          "indirect_partner_id",
-          "mobile_phone",
-          "email",
+          "parent_id",
+          "customer",
           "account_name",
-          "name",
           "associated_on",
-          "account_manager_id",
-          "account_manager_name",
+          "association_type",
+          "label",
+          "telephone",
+          "verified_status",
+          "country_code",
+          "customer_type",
+          "is_frozen",
+          "account_managers",
+          "xaccount_id",
+          "xaccount_type",
+          "customer_level",
+          "bind_status",
+          "unbind_on",
+          "isNA",
+          "naRecords",
+          "newCustomerStatus",
+          "newCustomerRecord",
+          "isNewCustomer",
           "updateTime",
         ],
-        ["updateTime", "indirect_partner_id"]
+        ["updateTime", "customer_id"]
       )
       .execute();
     // console.log(records.length);
   }
+  console.timeEnd("调用华为云接口获取当日直客数据");
   exit(1);
 })();

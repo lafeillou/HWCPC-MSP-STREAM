@@ -9,8 +9,8 @@ import {
 } from "typeorm";
 
 @Entity()
-@Unique(["updateTime", "indirect_partner_id", "version"])
-export class Partner {
+@Unique(["updateTime", "indirect_partner_id"])
+export class PartnerTemp {
   @PrimaryGeneratedColumn("uuid")
   id: number;
 
@@ -21,12 +21,6 @@ export class Partner {
   @Index()
   @UpdateDateColumn({ comment: "更新时间" })
   updateTime: Date;
-
-  @Index()
-  @Column({
-    type: "int",
-  })
-  version: number;
 
   @Index()
   @Column({
@@ -130,11 +124,4 @@ export class Partner {
     default: 2,
   })
   customerType: number;
-
-  @Column({
-    type: "tinyint",
-    comment: "1 最新采用版本 0 非最新",
-    default: 0,
-  })
-  isNewest: number;
 }

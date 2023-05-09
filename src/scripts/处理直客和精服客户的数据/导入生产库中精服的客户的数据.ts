@@ -1,16 +1,16 @@
-import { OldAppDataSource, AppDataSource } from "../data-source";
-import { IamUser } from "../entity/Iam_user";
-import { request } from "../utils/request";
-import iamUsers from "../constant/bpUsersInfo";
+import { OldAppDataSource, AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { request } from "../../utils/request";
+import iamUsers from "../../constant/bpUsersInfo";
 import * as _ from "lodash";
-import { Customer } from "../entity/Customer";
+import { Customer } from "../../entity/Customer";
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 import { exit } from "process";
 
 (async () => {
-  console.time("导入生产库中直客数据");
+  console.time("导入生产库中精服的客户数据");
   await OldAppDataSource.initialize();
   await AppDataSource.initialize();
   // .then(async () => {
@@ -28,14 +28,14 @@ import { exit } from "process";
 
   // 查询所有不同的客户ID
   const allDifCustomers = await queryRunner.query(
-    "SELECT * FROM customers c group by c.customer_id"
+    "SELECT * FROM indirectcustomers c group by c.customer_id"
   );
 
   for (let i = 0; i < allDifCustomers.length; i++) {
     const c = allDifCustomers[i];
     // 按照版本号排序
     let result = await queryRunner.query(
-      `select * from customers c where c.customer_id = "${c.customer_id}" order by c.version desc` // *要细化
+      `select * from indirectcustomers c where c.customer_id = "${c.customer_id}" order by c.version desc` // *要细化
     );
 
     result = _.uniqWith(result, (arrVal, othVal) => {
@@ -52,7 +52,7 @@ import { exit } from "process";
 
       const c = {
         bpId: v.bpId,
-        parent_id: v.bpId,
+        parent_id: v.elite_customer_id,
         customer: v.customer,
         customer_id: v.customer_id,
         account_name: v.account_name,
@@ -81,7 +81,7 @@ import { exit } from "process";
         updateTime: dayjs(v.updatedAt).format("YYYY-MM-DD"),
         createTime: dayjs(v.createdAt).format("YYYY-MM-DD"),
         version: version,
-        customerType: 0, // 标记为直客类型
+        customerType: 1, // 标记为精服的客户类型
       };
 
       await queryRunner2.manager.upsert(
@@ -95,6 +95,6 @@ import { exit } from "process";
   await queryRunner.release();
   await queryRunner2.release();
 
-  console.timeEnd("导入生产库中直客数据");
+  console.timeEnd("导入生产库中精服的客户数据");
   exit(1);
 })();

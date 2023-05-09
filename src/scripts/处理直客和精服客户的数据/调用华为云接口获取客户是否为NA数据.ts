@@ -1,8 +1,8 @@
 // 判断直客、精服的客户是否为NA
-import { AppDataSource } from "./data-source";
-import { IamUser } from "./entity/Iam_user";
-import { CustomerTemp } from "./entity/Customer_temp";
-import { request } from "./utils/request";
+import { AppDataSource } from "../../data-source";
+import { IamUser } from "../../entity/Iam_user";
+import { CustomerTemp } from "../../entity/Customer_temp";
+import { request } from "../../utils/request";
 import * as _ from "lodash";
 import { exit } from "process";
 
@@ -14,7 +14,7 @@ async function getNaInfo(params, token) {
   return new Promise(async (resolve, reject) => {
     const result: any = await request({
       method: "get",
-      url: "https://bss.myhuaweicloud.com/v2/settlements/new-customers-tags/smb",
+      url: "https://bss.myhuaweicloud.com/v2/auxiliary-operations/na-tags",
       headers: {
         "X-Auth-Token": token,
       },
@@ -26,9 +26,8 @@ async function getNaInfo(params, token) {
         console.log(err);
         resolve({
           customer_id: params.customer_id,
-          newCustomerStatus: null,
-          newCustomerRecord: null,
-          isNewCustomer: null,
+          na_records: null,
+          total_count: null,
         });
       });
 
@@ -39,34 +38,19 @@ async function getNaInfo(params, token) {
         .into(CustomerTemp)
         .values({
           customer_id: params.customer_id,
-          isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
-          newCustomerStatus: result.new_customer_tag,
-          newCustomerRecord: {
-            expire_time: result.expire_time,
-            effective_time: result.effective_time,
-            new_customer_tag: result.new_customer_tag,
-          },
+          isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
+          naRecords: result.na_records,
           updateTime: dayjs().format("YYYY-MM-DD"),
         })
         .orUpdate(
-          [
-            "newCustomerStatus",
-            "newCustomerRecord",
-            "isNewCustomer",
-            "updateTime",
-          ],
+          ["isNA", "naRecords", "updateTime"],
           ["updateTime", "customer_id"]
         )
         .execute();
       resolve({
         customer_id: params.customer_id,
-        newCustomerStatus: result.new_customer_tag,
-        newCustomerRecord: {
-          expire_time: result.expire_time,
-          effective_time: result.effective_time,
-          new_customer_tag: result.new_customer_tag,
-        },
-        isNewCustomer: result.new_customer_tag === "Y" ? 1 : 0,
+        na_records: result.na_records,
+        total_count: result.total_count,
       });
     }
   });
@@ -102,7 +86,9 @@ function createRequest(tasks, pool) {
             run();
           })
           .catch((err) => {
+            // 都会成功，不会到这里
             reject(err);
+            console.log(err);
           });
       };
       run();
@@ -116,6 +102,7 @@ function createRequest(tasks, pool) {
 }
 
 (async () => {
+  console.time("调用华为云接口获取客户是否为NA数据");
   await AppDataSource.initialize(); // 每一次都得执行
   // 获取token
   const iamUsers = await await AppDataSource.getRepository(IamUser)
@@ -135,7 +122,7 @@ function createRequest(tasks, pool) {
     .getMany();
 
   const tasksArr = [];
-  const startTime = +new Date();
+
   for (let i = 0; i < customers.length; i++) {
     const c = customers[i];
     tasksArr.push(() =>
@@ -149,10 +136,8 @@ function createRequest(tasks, pool) {
   }
 
   // tasksArr 中有超过1万个ajax请求任务
-  const results = await createRequest(tasksArr, 1);
-  const endTime = +new Date();
-  console.log("消耗时间:");
-  console.log(endTime - startTime);
-  // console.log(results);
+  const results = await createRequest(tasksArr, 4);
+
+  console.timeEnd("调用华为云接口获取客户是否为NA数据");
   exit(1);
 })();

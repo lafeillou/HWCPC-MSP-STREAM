@@ -1,7 +1,7 @@
-import { AppDataSource } from "../data-source";
+import { AppDataSource } from "../../data-source";
 import * as _ from "lodash";
-import { Customer } from "../entity/Customer";
-import { CustomerTemp } from "../entity/Customer_temp";
+import { Customer } from "../../entity/Customer";
+import { CustomerTemp } from "../../entity/Customer_temp";
 
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
