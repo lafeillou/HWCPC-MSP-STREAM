@@ -18,6 +18,8 @@ async function getSubCustomers(data, token) {
       "X-Auth-Token": token,
     },
     data,
+  }).catch((err) => {
+    console.log(err);
   });
 
   if (result) {
@@ -28,7 +30,11 @@ async function getSubCustomers(data, token) {
   }
 
   // 报错的情况，也要考虑
-  return result;
+
+  return {
+    customer_infos: [],
+    count: 0,
+  };
 }
 (async () => {
   console.time("调用华为云接口获取当日精英服务商的客户的数据");
@@ -69,9 +75,7 @@ async function getSubCustomers(data, token) {
           indirect_partner_id: p.indirect_partner_id,
         },
         u.token
-      ).catch((err) => {
-        console.log(err);
-      });
+      );
 
       // count 可能为undefined 或者 0
       if (!count) {
