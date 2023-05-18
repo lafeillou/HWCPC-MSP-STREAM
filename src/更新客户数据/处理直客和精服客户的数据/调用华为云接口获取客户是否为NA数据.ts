@@ -102,44 +102,47 @@ function createRequest(tasks, pool) {
     });
 }
 
-(async () => {
-  console.time("调用华为云接口获取客户是否为NA数据");
-  await AppDataSource.initialize(); // 每一次都得执行
-  // 获取token
-  const iamUsers = await await AppDataSource.getRepository(IamUser)
-    .createQueryBuilder("iamUsers")
-    .where("iamUsers.status = :status", { status: 1 }) // 在用的账号
-    .orderBy("iamUsers.sort", "ASC") // 按照排序来，一般重点区域排在前面
-    .getMany();
+export default () => {
+  return new Promise(async (resolve, reject) => {
+    console.time("调用华为云接口获取客户是否为NA数据");
+    // await AppDataSource.initialize(); // 每一次都得执行
+    // 获取token
+    const iamUsers = await AppDataSource.getRepository(IamUser)
+      .createQueryBuilder("iamUsers")
+      .where("iamUsers.status = :status", { status: 1 }) // 在用的账号
+      .orderBy("iamUsers.sort", "ASC") // 按照排序来，一般重点区域排在前面
+      .getMany();
 
-  const bpTokenMap = {};
-  _.forEach(iamUsers, (u) => {
-    bpTokenMap[u.bpId] = u.token;
+    const bpTokenMap = {};
+    _.forEach(iamUsers, (u) => {
+      bpTokenMap[u.bpId] = u.token;
+    });
+
+    // 获取某一个bp下所有的客户
+    const customers = await AppDataSource.getRepository(CustomerTemp)
+      .createQueryBuilder("customer_temp")
+      .getMany();
+
+    const tasksArr = [];
+
+    for (let i = 0; i < customers.length; i++) {
+      const c = customers[i];
+      tasksArr.push(() =>
+        getNaInfo(
+          {
+            customer_id: c.customer_id,
+            customerType: c.customerType,
+          },
+          bpTokenMap[c.bpId]
+        )
+      );
+    }
+
+    // tasksArr 中有超过1万个ajax请求任务
+    const results = await createRequest(tasksArr, 4);
+
+    console.timeEnd("调用华为云接口获取客户是否为NA数据");
+    resolve("调用华为云接口获取客户是否为NA数据 done");
+    // exit(1);
   });
-
-  // 获取某一个bp下所有的客户
-  const customers = await AppDataSource.getRepository(CustomerTemp)
-    .createQueryBuilder("customer_temp")
-    .getMany();
-
-  const tasksArr = [];
-
-  for (let i = 0; i < customers.length; i++) {
-    const c = customers[i];
-    tasksArr.push(() =>
-      getNaInfo(
-        {
-          customer_id: c.customer_id,
-          customerType: c.customerType,
-        },
-        bpTokenMap[c.bpId]
-      )
-    );
-  }
-
-  // tasksArr 中有超过1万个ajax请求任务
-  const results = await createRequest(tasksArr, 4);
-
-  console.timeEnd("调用华为云接口获取客户是否为NA数据");
-  exit(1);
-})();
+};

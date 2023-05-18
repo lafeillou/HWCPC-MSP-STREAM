@@ -8,7 +8,7 @@ import {
   Unique,
 } from "typeorm";
 
-@Entity()
+@Entity("base_data_elite_customer")
 @Unique(["updateTime", "indirect_partner_id", "version"])
 export class Partner {
   @PrimaryGeneratedColumn("uuid")

@@ -8,7 +8,7 @@ import {
   Unique,
 } from "typeorm";
 
-@Entity()
+@Entity("base_data_customer_temp")
 @Unique(["updateTime", "customer_id", "version"])
 export class Customer {
   @PrimaryGeneratedColumn("uuid")
