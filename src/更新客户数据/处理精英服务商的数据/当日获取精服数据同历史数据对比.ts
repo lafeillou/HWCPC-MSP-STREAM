@@ -17,7 +17,7 @@ export default () => {
 
     // 查询所有历史客户且版本为最新的
     const historyPartners = await queryRunner.query(
-      "select * from (select row_number() over (partition by c.indirect_partner_id order by c.version desc ) as rn, c.* from partner as c) as b where b.rn = 1"
+      "select * from (select row_number() over (partition by c.indirect_partner_id order by c.version desc ) as rn, c.* from base_data_elite_customer as c) as b where b.rn = 1"
     );
 
     for (let i = 0; i < historyPartners.length; i++) {

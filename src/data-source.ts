@@ -42,11 +42,11 @@ let OldAppDataSource = new DataSource({
 if (argv.production) {
   AppDataSource = new DataSource({
     type: "mysql",
-    host: "127.0.0.1",
+    host: "10.233.9.243",
     port: 3306,
     username: "root",
     password: "Uz6@ynpMu93@Jc",
-    database: "hwautodata",
+    database: "cool",
     synchronize: true,
     logging: false,
     entities: [IamUser, Customer, Partner, CustomerTemp, PartnerTemp],
@@ -56,8 +56,8 @@ if (argv.production) {
 
   OldAppDataSource = new DataSource({
     type: "mysql",
-    host: "127.0.0.1",
-    port: 3307,
+    host: "10.233.9.243",
+    port: 3306,
     username: "root",
     password: "Uz6@ynpMu93@Jc",
     database: "iocsysprodonlyapi",

@@ -17,7 +17,7 @@ export default () => {
 
     // 按照版本号排序
     let result = await queryRunner.query(
-      `update partner c set c.isNewest = 1  where c.id in (select id from (select row_number() over (partition by c.indirect_partner_id order by c.version desc ) as rn, c.* from partner as c) as b where b.rn = 1)`
+      `update base_data_elite_customer c set c.isNewest = 1  where c.id in (select id from (select row_number() over (partition by c.indirect_partner_id order by c.version desc ) as rn, c.* from base_data_elite_customer as c) as b where b.rn = 1)`
     );
 
     console.log(result);
