@@ -6,6 +6,7 @@ import { Customer } from "./entity/Customer";
 import { CustomerTemp } from "./entity/Customer_temp";
 import { Partner } from "./entity/Partner";
 import { PartnerTemp } from "./entity/Partner_temp";
+import { BaseDataCustomersMonth } from "./entity/customers_month";
 
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
@@ -17,10 +18,17 @@ let AppDataSource = new DataSource({
   port: 3306,
   username: "root",
   password: "mc000306",
-  database: "hwautodata",
+  database: "cool",
   synchronize: true,
   logging: false,
-  entities: [IamUser, Customer, Partner, CustomerTemp, PartnerTemp],
+  entities: [
+    IamUser,
+    Customer,
+    Partner,
+    CustomerTemp,
+    PartnerTemp,
+    BaseDataCustomersMonth,
+  ],
   migrations: [],
   subscribers: [],
 });

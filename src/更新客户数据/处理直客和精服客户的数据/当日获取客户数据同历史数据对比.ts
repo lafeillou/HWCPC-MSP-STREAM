@@ -22,11 +22,15 @@ export default () => {
 
     for (let i = 0; i < historyCustomers.length; i++) {
       const customer = historyCustomers[i];
-
+      customer.associated_on = dayjs
+        .utc(customer.associated_on)
+        .local()
+        .format("YYYY-MM-DD"); // to do
       const customerPlain = _.omit(customer, [
         "createTime",
         "updateTime",
         "version",
+        "isNewest",
         "id",
         "rn",
       ]);
@@ -43,6 +47,7 @@ export default () => {
         const matchedCustomerPlain = _.omit(matchedCustomer, [
           "createTime",
           "updateTime",
+          "id",
         ]);
 
         const isChanged = !_.isEqual(matchedCustomerPlain, customerPlain);

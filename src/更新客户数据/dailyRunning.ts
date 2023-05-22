@@ -1,5 +1,5 @@
 // 从无到有，初始化流程的时候使用的脚本
-import connection from "./初始化数据库连接/connect";
+import connection from "../connection/db";
 // 登录IAM看板账号
 import loginIamAccount from "./登录IAM看板账号/iamUsers";
 // 导入生产库中精英服务商的数据
