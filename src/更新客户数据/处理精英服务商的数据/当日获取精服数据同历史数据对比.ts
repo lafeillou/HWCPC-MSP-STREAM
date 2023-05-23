@@ -97,10 +97,8 @@ export default () => {
               id: partner.id,
             })
             .getOne();
-
-          historyPartner.unbind_on = dayjs(partner.updateTime).format(
-            "YYYY-MM-DD"
-          );
+          historyPartner.updateTime = historyPartner.unbind_on =
+            dayjs().format("YYYY-MM-DD");
           historyPartner.bind_status = 0;
           historyPartner.isNewest = 1; // 指定为最新的版本
           await AppDataSource.createQueryBuilder()

@@ -7,6 +7,8 @@ import { CustomerTemp } from "./entity/Customer_temp";
 import { Partner } from "./entity/Partner";
 import { PartnerTemp } from "./entity/Partner_temp";
 import { BaseDataCustomersMonth } from "./entity/customers_month";
+import { CustomerSwap } from "./entity/customer_swap";
+import { PartnerSwap } from "./entity/Partner_swap";
 
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
@@ -28,6 +30,8 @@ let AppDataSource = new DataSource({
     CustomerTemp,
     PartnerTemp,
     BaseDataCustomersMonth,
+    CustomerSwap,
+    PartnerSwap,
   ],
   migrations: [],
   subscribers: [],
@@ -57,7 +61,15 @@ if (argv.production) {
     database: "cool",
     synchronize: true,
     logging: false,
-    entities: [IamUser, Customer, Partner, CustomerTemp, PartnerTemp],
+    entities: [
+      IamUser,
+      Customer,
+      Partner,
+      CustomerTemp,
+      PartnerTemp,
+      CustomerSwap,
+      PartnerSwap,
+    ],
     migrations: [],
     subscribers: [],
   });

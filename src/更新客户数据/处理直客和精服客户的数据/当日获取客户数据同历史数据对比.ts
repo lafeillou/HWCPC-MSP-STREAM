@@ -110,9 +110,8 @@ export default () => {
             })
             .getOne();
 
-          historyCustomer.unbind_on = dayjs(customer.updateTime).format(
-            "YYYY-MM-DD"
-          );
+          historyCustomer.updateTime = historyCustomer.unbind_on =
+            dayjs().format("YYYY-MM-DD");
           historyCustomer.bind_status = 0;
           historyCustomer.isNewest = 1; // 指定为最新的版本
           await AppDataSource.createQueryBuilder()
