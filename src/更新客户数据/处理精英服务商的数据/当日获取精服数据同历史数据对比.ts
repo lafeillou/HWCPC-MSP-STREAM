@@ -57,21 +57,21 @@ export default () => {
 
     for (let i = 0; i < currentPartners.length; i++) {
       const currentPartner = currentPartners[i];
-      const matchedOne = await AppDataSource.getRepository(Partner)
+      const matchedRecords = await AppDataSource.getRepository(Partner)
         .createQueryBuilder("partner")
         .where("partner.indirect_partner_id = :indirect_partner_id", {
           indirect_partner_id: currentPartner.indirect_partner_id,
         })
-        .getOne();
+        .getMany();
 
       // 如果不存在，即视为新增
-      if (!matchedOne) {
+      if (!matchedRecords || !matchedRecords.length) {
         const currentPartnerPlain = _.omit(currentPartner, [
           "createTime",
           "updateTime",
           "id",
         ]);
-        await upsert(currentPartnerPlain, 1);
+        await upsert(currentPartnerPlain, matchedRecords.length + 1);
       }
     }
 

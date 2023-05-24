@@ -68,21 +68,21 @@ export default () => {
 
     for (let i = 0; i < currentCustomers.length; i++) {
       const currentCustomer = currentCustomers[i];
-      const matchedOne = await AppDataSource.getRepository(Customer)
+      const matchedRecords = await AppDataSource.getRepository(Customer)
         .createQueryBuilder("customer")
         .where("customer.customer_id = :customer_id", {
           customer_id: currentCustomer.customer_id,
         })
-        .getOne();
+        .getMany();
 
       // 如果不存在，即视为新增
-      if (!matchedOne) {
+      if (!matchedRecords || !matchedRecords.length) {
         const currentCustomerPlain = _.omit(currentCustomer, [
           "createTime",
           "updateTime",
           "id",
         ]);
-        await upsert(currentCustomerPlain, 1);
+        await upsert(currentCustomerPlain, matchedRecords.length + 1);
       }
     }
 
