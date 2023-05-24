@@ -82,7 +82,7 @@ export default () => {
           "updateTime",
           "id",
         ]);
-        await upsert(currentCustomerPlain, 0);
+        await upsert(currentCustomerPlain, 1);
       }
     }
 

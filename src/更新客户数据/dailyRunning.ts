@@ -3,7 +3,7 @@ import connection from "../connection/db";
 // 登录IAM看板账号
 import loginIamAccount from "./登录IAM看板账号/iamUsers";
 // 导入生产库中精英服务商的数据
-import asyncStep2 from "./处理精英服务商的数据/调用华为云接口获取当日精服的数据";
+import syncStep2 from "./处理精英服务商的数据/调用华为云接口获取当日精服的数据";
 import syncStep3 from "./处理精英服务商的数据/当日获取精服数据同历史数据对比";
 import syncStep4 from "./处理精英服务商的数据/统一标记最新版本号为当前最新版本";
 
@@ -42,7 +42,7 @@ import { exit } from "process";
 
   // 精英服务商的相关数据 start
 
-  await asyncStep2();
+  await syncStep2();
   await syncStep3();
   await syncStep4();
   // 精英服务商的相关数据 end

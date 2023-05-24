@@ -15,7 +15,7 @@ async function upsert(matchedPartnerPlain, version) {
     .into(Partner)
     .values({
       ...matchedPartnerPlain,
-      version: version,
+      version,
       isNewest: 1, // 指定为最新的版本
       bind_status: 1,
       unbind_on: null,
@@ -71,7 +71,7 @@ export default () => {
           "updateTime",
           "id",
         ]);
-        await upsert(currentPartnerPlain, 0);
+        await upsert(currentPartnerPlain, 1);
       }
     }
 
