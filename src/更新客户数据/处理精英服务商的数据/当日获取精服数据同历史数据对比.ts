@@ -8,12 +8,72 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 import { exit } from "process";
 
+async function upsert(matchedPartnerPlain, version) {
+  // 直接插入
+  await AppDataSource.createQueryBuilder()
+    .insert()
+    .into(Partner)
+    .values({
+      ...matchedPartnerPlain,
+      version: version,
+      isNewest: 1, // 指定为最新的版本
+      bind_status: 1,
+      unbind_on: null,
+      createTime: dayjs().format("YYYY-MM-DD"),
+      updateTime: dayjs().format("YYYY-MM-DD"),
+    })
+    .orUpdate(
+      [
+        "bpId",
+        "parent_id",
+        "mobile_phone",
+        "email",
+        "account_name",
+        "name",
+        "associated_on", // to do
+        "account_manager_id",
+        "account_manager_name",
+        "bind_status",
+        "unbind_on",
+        "updateTime",
+        "customerType",
+      ],
+      ["updateTime", "indirect_partner_id", "version"]
+    )
+    .execute();
+}
+
 export default () => {
   return new Promise(async (resolve, reject) => {
     console.time("当日获取精服数据同历史数据对比");
     // await AppDataSource.initialize();
 
     const queryRunner = AppDataSource.createQueryRunner(); // 目标数据库
+
+    // 新增加的客户入库
+    const currentPartners = await AppDataSource.getRepository(PartnerTemp)
+      .createQueryBuilder("partnerTemp")
+      .getMany();
+
+    for (let i = 0; i < currentPartners.length; i++) {
+      const currentPartner = currentPartners[i];
+      const matchedOne = await AppDataSource.getRepository(Partner)
+        .createQueryBuilder("partner")
+        .where("partner.indirect_partner_id = :indirect_partner_id", {
+          indirect_partner_id: currentPartner.indirect_partner_id,
+        })
+        .getOne();
+
+      // 如果不存在，即视为新增
+      if (!matchedOne) {
+        const currentPartnerPlain = _.omit(currentPartner, [
+          "createTime",
+          "updateTime",
+          "id",
+        ]);
+        await upsert(currentPartnerPlain, 0);
+      }
+    }
 
     // 查询所有历史客户且版本为最新的
     const historyPartners = await queryRunner.query(
@@ -53,38 +113,7 @@ export default () => {
         const isChanged = !_.isEqual(matchedPartnerPlain, partnerPlain);
 
         if (isChanged) {
-          // 直接插入
-          await AppDataSource.createQueryBuilder()
-            .insert()
-            .into(Partner)
-            .values({
-              ...matchedPartnerPlain,
-              version: partner.version + 1,
-              isNewest: 1, // 指定为最新的版本
-              bind_status: 1,
-              unbind_on: null,
-              createTime: dayjs().format("YYYY-MM-DD"),
-              updateTime: dayjs().format("YYYY-MM-DD"),
-            })
-            .orUpdate(
-              [
-                "bpId",
-                "parent_id",
-                "mobile_phone",
-                "email",
-                "account_name",
-                "name",
-                "associated_on", // to do
-                "account_manager_id",
-                "account_manager_name",
-                "bind_status",
-                "unbind_on",
-                "updateTime",
-                "customerType",
-              ],
-              ["updateTime", "indirect_partner_id", "version"]
-            )
-            .execute();
+          await upsert(matchedPartnerPlain, partner.version + 1);
         } else {
           // do nothing
         }

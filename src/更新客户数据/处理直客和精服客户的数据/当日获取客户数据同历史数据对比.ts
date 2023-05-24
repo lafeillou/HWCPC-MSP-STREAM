@@ -8,12 +8,83 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 import { exit } from "process";
 
+async function upsert(matchedCustomerPlain, version) {
+  // 直接插入
+  await AppDataSource.createQueryBuilder()
+    .insert()
+    .into(Customer)
+    .values({
+      ...matchedCustomerPlain,
+      version,
+      isNewest: 1, // 指定为最新的版本
+      bind_status: 1,
+      unbind_on: null,
+      createTime: dayjs().format("YYYY-MM-DD"),
+      updateTime: dayjs().format("YYYY-MM-DD"),
+    })
+    .orUpdate(
+      [
+        "bpId",
+        "parent_id",
+        "customer",
+        "account_name",
+        "associated_on",
+        "association_type",
+        "label",
+        "telephone",
+        "verified_status",
+        "country_code",
+        "customer_type",
+        "is_frozen",
+        "account_managers",
+        "xaccount_id",
+        "xaccount_type",
+        "customer_level",
+        "bind_status",
+        "unbind_on",
+        "isNA",
+        "naRecords",
+        "newCustomerStatus",
+        "newCustomerRecord",
+        "isNewCustomer",
+        "updateTime",
+        "customerType",
+      ],
+      ["updateTime", "customer_id", "version"]
+    )
+    .execute();
+}
 export default () => {
   return new Promise(async (resolve, reject) => {
     console.time("当日获取客户数据同历史数据对比");
     // await AppDataSource.initialize();
 
     const queryRunner = AppDataSource.createQueryRunner(); // 目标数据库
+
+    // 新增加的客户入库
+    const currentCustomers = await AppDataSource.getRepository(CustomerTemp)
+      .createQueryBuilder("customerTemp")
+      .getMany();
+
+    for (let i = 0; i < currentCustomers.length; i++) {
+      const currentCustomer = currentCustomers[i];
+      const matchedOne = await AppDataSource.getRepository(Customer)
+        .createQueryBuilder("customer")
+        .where("customer.customer_id = :customer_id", {
+          customer_id: currentCustomer.customer_id,
+        })
+        .getOne();
+
+      // 如果不存在，即视为新增
+      if (!matchedOne) {
+        const currentCustomerPlain = _.omit(currentCustomer, [
+          "createTime",
+          "updateTime",
+          "id",
+        ]);
+        await upsert(currentCustomerPlain, 0);
+      }
+    }
 
     // 查询所有历史客户且版本为最新的
     const historyCustomers = await queryRunner.query(
@@ -53,50 +124,7 @@ export default () => {
         const isChanged = !_.isEqual(matchedCustomerPlain, customerPlain);
 
         if (isChanged) {
-          // 直接插入
-          await AppDataSource.createQueryBuilder()
-            .insert()
-            .into(Customer)
-            .values({
-              ...matchedCustomerPlain,
-              version: customer.version + 1,
-              isNewest: 1, // 指定为最新的版本
-              bind_status: 1,
-              unbind_on: null,
-              createTime: dayjs().format("YYYY-MM-DD"),
-              updateTime: dayjs().format("YYYY-MM-DD"),
-            })
-            .orUpdate(
-              [
-                "bpId",
-                "parent_id",
-                "customer",
-                "account_name",
-                "associated_on",
-                "association_type",
-                "label",
-                "telephone",
-                "verified_status",
-                "country_code",
-                "customer_type",
-                "is_frozen",
-                "account_managers",
-                "xaccount_id",
-                "xaccount_type",
-                "customer_level",
-                "bind_status",
-                "unbind_on",
-                "isNA",
-                "naRecords",
-                "newCustomerStatus",
-                "newCustomerRecord",
-                "isNewCustomer",
-                "updateTime",
-                "customerType",
-              ],
-              ["updateTime", "customer_id", "version"]
-            )
-            .execute();
+          await upsert(matchedCustomerPlain, customer.version + 1);
         } else {
           // do nothing
         }
