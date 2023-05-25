@@ -62,6 +62,9 @@ export default () => {
         .where("partner.indirect_partner_id = :indirect_partner_id", {
           indirect_partner_id: currentPartner.indirect_partner_id,
         })
+        .andWhere("partner.customerType = :customerType", {
+          customerType: currentPartner.customerType,
+        })
         .getMany();
 
       // 如果不存在，即视为新增
@@ -77,7 +80,7 @@ export default () => {
 
     // 查询所有历史客户且版本为最新的
     const historyPartners = await queryRunner.query(
-      "select * from (select row_number() over (partition by c.indirect_partner_id order by c.version desc ) as rn, c.* from base_data_elite_customer as c) as b where b.rn = 1"
+      "select * from (select row_number() over (partition by c.indirect_partner_id, c.customerType order by c.version desc ) as rn, c.* from base_data_elite_customer as c) as b where b.rn = 1"
     );
 
     for (let i = 0; i < historyPartners.length; i++) {
@@ -100,6 +103,9 @@ export default () => {
         .createQueryBuilder("partnerTemp")
         .where("partnerTemp.indirect_partner_id = :indirect_partner_id", {
           indirect_partner_id: partner.indirect_partner_id,
+        })
+        .andWhere("partnerTemp.customerType = :customerType", {
+          customerType: partner.customerType,
         })
         .getOne();
 

@@ -73,6 +73,9 @@ export default () => {
         .where("customer.customer_id = :customer_id", {
           customer_id: currentCustomer.customer_id,
         })
+        .andWhere("customerTemp.customerType = :customerType", {
+          customerType: currentCustomer.customerType,
+        })
         .getMany();
 
       // 如果不存在，即视为新增
@@ -88,7 +91,7 @@ export default () => {
 
     // 查询所有历史客户且版本为最新的
     const historyCustomers = await queryRunner.query(
-      "select * from (select row_number() over (partition by c.customer_id order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 1"
+      "select * from (select row_number() over (partition by c.customer_id, c.customerType order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 1"
     );
 
     for (let i = 0; i < historyCustomers.length; i++) {
@@ -111,6 +114,9 @@ export default () => {
         .createQueryBuilder("customerTemp")
         .where("customerTemp.customer_id = :customer_id", {
           customer_id: customer.customer_id,
+        })
+        .andWhere("customerTemp.customerType = :customerType", {
+          customerType: customer.customerType,
         })
         .getOne();
 
