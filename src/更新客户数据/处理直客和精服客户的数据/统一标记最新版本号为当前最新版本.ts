@@ -19,14 +19,14 @@ export default () => {
     let result = await queryRunner.query(
       `update base_data_customer c set c.isNewest = 1, c.updateTime = "${dayjs().format(
         "YYYY-MM-DD"
-      )}"  where c.id in (select id from (select row_number() over (partition by c.customer_id order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 1)`
+      )}"  where c.id in (select id from (select row_number() over (partition by c.customer_id, c.customerType order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 1)`
     );
 
     // 将不是第一位的 isNewest字段都设置为0
     let result0 = await queryRunner.query(
       `update base_data_customer c set c.isNewest = 0, c.updateTime = "${dayjs().format(
         "YYYY-MM-DD"
-      )}" where c.id in (select id from (select row_number() over (partition by c.customer_id order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 2)`
+      )}" where c.id in (select id from (select row_number() over (partition by c.customer_id, c.customerType order by c.version desc ) as rn, c.* from base_data_customer as c) as b where b.rn = 2)`
     );
 
     console.log(result);
