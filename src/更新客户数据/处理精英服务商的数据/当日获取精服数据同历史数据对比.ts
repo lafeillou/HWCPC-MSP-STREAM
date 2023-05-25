@@ -35,10 +35,10 @@ async function upsert(matchedPartnerPlain, version) {
         "account_manager_name",
         "bind_status",
         "unbind_on",
-        "updateTime",
-        "customerType",
+        // "updateTime",
+        // "customerType",
       ],
-      ["updateTime", "indirect_partner_id", "version"]
+      ["updateTime", "indirect_partner_id", "version", "customerType"]
     )
     .execute();
 }

@@ -88,7 +88,7 @@ export default () => {
         await queryRunner2.manager.upsert(
           Customer,
           [c],
-          ["updateTime", "customer_id", "version"]
+          ["updateTime", "customer_id", "version", "customerType"]
         );
       }
     }

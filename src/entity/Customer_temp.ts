@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 
 @Entity("base_data_customer_temp") // 保持和HWCPC-MSP-BACKEND 项目中 entity定义一致
-@Unique(["updateTime", "customer_id"])
+@Unique(["updateTime", "customer_id", "customerType"])
 export class CustomerTemp {
   @PrimaryGeneratedColumn("uuid")
   id: number;

@@ -47,10 +47,10 @@ async function upsert(matchedCustomerPlain, version) {
         "newCustomerStatus",
         "newCustomerRecord",
         "isNewCustomer",
-        "updateTime",
-        "customerType",
+        // "updateTime",
+        // "customerType",
       ],
-      ["updateTime", "customer_id", "version"]
+      ["updateTime", "customer_id", "version", "customerType"]
     )
     .execute();
 }
