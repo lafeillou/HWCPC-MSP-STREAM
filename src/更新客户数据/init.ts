@@ -30,53 +30,53 @@ import { exit } from "process";
   // 初始化数据库连接
   await connection();
 
-  // // 登录IAM看板账号
-  // await loginIamAccount().then((res) => {
-  //   // console.log(res);
-  // });
+  // 登录IAM看板账号
+  await loginIamAccount().then((res) => {
+    // console.log(res);
+  });
 
-  // // 清空客户表、客户暂存表、精服表、精服暂存表
-  // const p5 = Promise.all([
-  //   asyncStep13(),
-  //   asyncStep14(),
-  //   asyncStep15(),
-  //   asyncStep16(),
-  // ]).then(([res1, res2, res3, res4]) => {
-  //   // console.log(res1);
-  //   // console.log(res2);
-  // });
-  // await p5;
-  // // asyncStep1();
-  // // asyncStep2();
-  // // 精英服务商的相关数据 start
-  // // asyncStep1和asyncStep2 并行执行
-  // const p1 = Promise.all([asyncStep1(), asyncStep2()]).then(([res1, res2]) => {
-  //   // console.log(res1);
-  //   // console.log(res2);
-  // });
-  // await p1;
-  // await syncStep3();
-  // await syncStep4();
-  // // 精英服务商的相关数据 end
+  // 清空客户表、客户暂存表、精服表、精服暂存表
+  const p5 = Promise.all([
+    asyncStep13(),
+    asyncStep14(),
+    asyncStep15(),
+    asyncStep16(),
+  ]).then(([res1, res2, res3, res4]) => {
+    // console.log(res1);
+    // console.log(res2);
+  });
+  await p5;
+  // asyncStep1();
+  // asyncStep2();
+  // 精英服务商的相关数据 start
+  // asyncStep1和asyncStep2 并行执行
+  const p1 = Promise.all([asyncStep1(), asyncStep2()]).then(([res1, res2]) => {
+    // console.log(res1);
+    // console.log(res2);
+  });
+  await p1;
+  await syncStep3();
+  await syncStep4();
+  // 精英服务商的相关数据 end
 
-  // // 直客和精服客户相关数据 start
-  // const p2 = Promise.all([asyncStep5(), asyncStep6()]).then(([res1, res2]) => {
-  //   // console.log(res1);
-  //   // console.log(res2);
-  // });
-  // await p2;
+  // 直客和精服客户相关数据 start
+  const p2 = Promise.all([asyncStep5(), asyncStep6()]).then(([res1, res2]) => {
+    // console.log(res1);
+    // console.log(res2);
+  });
+  await p2;
 
-  // const p3 = Promise.all([asyncStep7(), asyncStep8()]).then(([res1, res2]) => {
-  //   // console.log(res1);
-  //   // console.log(res2);
-  // });
-  // await p3;
+  const p3 = Promise.all([asyncStep7(), asyncStep8()]).then(([res1, res2]) => {
+    // console.log(res1);
+    // console.log(res2);
+  });
+  await p3;
 
-  // const p4 = Promise.all([asyncStep9(), asyncStep10()]).then(([res1, res2]) => {
-  //   // console.log(res1);
-  //   // console.log(res2);
-  // });
-  // await p4;
+  const p4 = Promise.all([asyncStep9(), asyncStep10()]).then(([res1, res2]) => {
+    // console.log(res1);
+    // console.log(res2);
+  });
+  await p4;
 
   await syncStep11();
   await syncStep12();
