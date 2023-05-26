@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 // 同Partner实体完全一样
 @Entity("base_data_elite_customer_swap")
-@Unique(["updateTime", "indirect_partner_id", "version"])
+@Unique(["updateTime", "indirect_partner_id", "version", "customerType"])
 export class PartnerSwap {
   @PrimaryGeneratedColumn("uuid")
   id: number;

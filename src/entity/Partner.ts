@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 
 @Entity("base_data_elite_customer")
-@Unique(["updateTime", "indirect_partner_id", "version"])
+@Unique(["updateTime", "indirect_partner_id", "version", "customerType"])
 export class Partner {
   @PrimaryGeneratedColumn("uuid")
   id: number;
