@@ -7,7 +7,7 @@ import { CustomerTemp } from "./entity/Customer_temp";
 import { Partner } from "./entity/Partner";
 import { PartnerTemp } from "./entity/Partner_temp";
 import { BaseDataCustomersMonth } from "./entity/customers_month";
-import { CustomerSwap } from "./entity/customer_swap";
+import { CustomerSwap } from "./entity/Customer_swap";
 import { PartnerSwap } from "./entity/Partner_swap";
 
 const yargs = require("yargs/yargs");
