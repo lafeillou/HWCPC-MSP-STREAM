@@ -73,7 +73,7 @@ export default () => {
         .where("customer.customer_id = :customer_id", {
           customer_id: currentCustomer.customer_id,
         })
-        .andWhere("customerTemp.customerType = :customerType", {
+        .andWhere("customer.customerType = :customerType", {
           customerType: currentCustomer.customerType,
         })
         .getMany();
