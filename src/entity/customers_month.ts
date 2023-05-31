@@ -14,7 +14,7 @@ import {
  */
 @Entity("base_data_customers_month")
 @Unique(["客户ID", "客户类型", "月度"])
-export class BaseDataCustomersMonth {
+export class CustomerMonth {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -66,15 +66,14 @@ export class BaseDataCustomersMonth {
     comment: "客户经理",
     nullable: true,
   })
-  account_managers: string;
+  account_managers: object;
 
   @Column({
-    type: "varchar",
-    length: 255,
+    type: "tinyint",
     comment: "关联类型",
     nullable: true,
   })
-  关联类型: string;
+  关联类型: number;
 
   @Column({
     type: "date",
@@ -113,19 +112,18 @@ export class BaseDataCustomersMonth {
   客户等级: string;
 
   @Column({
-    type: "json",
+    type: "tinyint",
     comment: "NA状态",
     nullable: true,
   })
-  NA状态: string;
+  NA状态: number;
 
   @Column({
-    type: "varchar",
-    length: 100,
+    type: "tinyint",
     comment: "新客状态",
     nullable: true,
   })
-  新客状态: string;
+  新客状态: number;
 
   @Column({
     type: "varchar",

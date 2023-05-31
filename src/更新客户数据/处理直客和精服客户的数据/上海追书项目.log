@@ -1,0 +1,4 @@
+../../../../../../usr/lib/node_modules/typescript/lib/lib.es2015.iterable.d.ts(39,6): error TS2300: Duplicate identifier 'IteratorResult'.
+../../../node_modules/@types/node/index.d.ts(168,11): error TS2300: Duplicate identifier 'IteratorResult'.
+../../../../../../usr/lib/node_modules/typescript/lib/lib.es2015.iterable.d.ts(39,6): error TS2300: Duplicate identifier 'IteratorResult'.
+../../../node_modules/@types/node/index.d.ts(168,11): error TS2300: Duplicate identifier 'IteratorResult'.

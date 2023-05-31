@@ -38,7 +38,7 @@ async function getNaInfo(params, token) {
         .into(CustomerTemp)
         .values({
           customer_id: params.customer_id,
-          isNA: result.na_records[0].na_tag === "Y" ? 1 : 0,
+          isNA: result.na_records[0].na_tag === "Y" ? 1 : 0, // 当前这个逻辑足以判断
           naRecords: result.na_records,
           updateTime: dayjs().format("YYYY-MM-DD"),
           customerType: params.customerType,

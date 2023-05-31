@@ -6,7 +6,7 @@ import { Customer } from "./entity/Customer";
 import { CustomerTemp } from "./entity/Customer_temp";
 import { Partner } from "./entity/Partner";
 import { PartnerTemp } from "./entity/Partner_temp";
-import { BaseDataCustomersMonth } from "./entity/customers_month";
+import { CustomerMonth } from "./entity/Customers_month";
 import { CustomerSwap } from "./entity/Customer_swap";
 import { PartnerSwap } from "./entity/Partner_swap";
 
@@ -29,7 +29,7 @@ let AppDataSource = new DataSource({
     Partner,
     CustomerTemp,
     PartnerTemp,
-    BaseDataCustomersMonth,
+    CustomerMonth,
     CustomerSwap,
     PartnerSwap,
   ],
@@ -69,6 +69,7 @@ if (argv.production) {
       PartnerTemp,
       CustomerSwap,
       PartnerSwap,
+      CustomerMonth,
     ],
     migrations: [],
     subscribers: [],
