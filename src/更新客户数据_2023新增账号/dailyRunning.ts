@@ -20,9 +20,10 @@ import asyncStep14 from "./处理直客和精服客户的数据/清空客户暂�
 
 import asyncStep16 from "./处理精英服务商的数据/清空精英服务商暂存表";
 
-import { exit } from "process";
-(async () => {
-  console.time("更新客户数据(每日执行)总耗时");
+// import { exit } from "process";
+
+export default async () => {
+  console.time("更新客户数据_2023新增账号下的直客总耗时");
   // 初始化数据库连接
   await connection();
 
@@ -62,7 +63,5 @@ import { exit } from "process";
 
   await syncStep11();
   await syncStep12();
-  console.timeEnd("更新客户数据(每日执行)总耗时");
-  // 直客和精服客户相关数据 end
-  exit(1);
-})();
+  console.timeEnd("更新客户数据_2023新增账号下的直客总耗时");
+};
