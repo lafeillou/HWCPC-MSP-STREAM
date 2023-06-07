@@ -25,7 +25,7 @@ import asyncStep16 from "./处理精英服务商的数据/清空精英服务商�
 export default async () => {
   console.time("更新客户数据_2023新增账号下的直客总耗时");
   // 初始化数据库连接
-  await connection();
+  // await connection();
 
   // 登录IAM看板账号
   await loginIamAccount().then((res) => {
