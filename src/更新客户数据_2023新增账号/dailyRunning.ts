@@ -16,9 +16,9 @@ import asyncStep10 from "./处理直客和精服客户的数据/调用华为云�
 import syncStep11 from "./处理直客和精服客户的数据/当日获取客户数据同历史数据对比";
 import syncStep12 from "./处理直客和精服客户的数据/统一标记最新版本号为当前最新版本";
 
-import asyncStep14 from "./处理直客和精服客户的数据/清空客户暂存表";
+// import asyncStep14 from "./处理直客和精服客户的数据/清空客户暂存表";
 
-import asyncStep16 from "./处理精英服务商的数据/清空精英服务商暂存表";
+// import asyncStep16 from "./处理精英服务商的数据/清空精英服务商暂存表";
 
 // import { exit } from "process";
 
@@ -33,13 +33,13 @@ export default async () => {
   });
 
   // 清空客户表、客户暂存表、精服表、精服暂存表
-  const p5 = Promise.all([asyncStep14(), asyncStep16()]).then(
-    ([res1, res2]) => {
-      // console.log(res1);
-      // console.log(res2);
-    }
-  );
-  await p5;
+  // const p5 = Promise.all([asyncStep14(), asyncStep16()]).then(
+  //   ([res1, res2]) => {
+  //     // console.log(res1);
+  //     // console.log(res2);
+  //   }
+  // );
+  // await p5;
   // 2023年新建的这批账号，只查直客数据
   // 精英服务商的相关数据 start
   // await syncStep2();
