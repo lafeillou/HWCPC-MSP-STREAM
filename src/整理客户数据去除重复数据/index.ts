@@ -16,5 +16,5 @@ import { exit } from "process";
 
   console.timeEnd("整理客户数据去除重复数据");
   // 直客和精服客户相关数据 end
-  exit(1);
+  exit(0);
 })();
